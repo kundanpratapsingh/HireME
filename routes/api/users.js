@@ -1,7 +1,10 @@
 const express = require("express");
 const Joi = require("joi");
+const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
+const auth = require("../../middleware/auth");
 const User = require("../../models/userModel");
+const config = require("config");
 const router = express.Router();
 
 //Get api/users
@@ -31,12 +34,36 @@ router.post("/", async (req, res) => {
       d: "mm",
     });
     user = new User({ name, email, avatar, password });
+    const payload = {
+      user: { id: user.id },
+    };
     const saved = await user.save();
-    if (saved) {
-      return res.status(200).send("Sucessfully Registered");
-    }
+    if (saved)
+      return res.send({ message: "User Resgisterd Sucessfully" }).status(200);
+    // jwt.sign(
+    //   payload,
+    //   config.get("jwtsecret"),
+    //   { expiresIn: 500000 },
+    //   (err, token) => {
+    //     if (err) throw err;
+    //     res.json({ token });
+    //   }
+    // );
   } catch (err) {
+    console.error(err);
     res.status(500).send("Internal server error");
+  }
+});
+
+router.get("/", auth, async (req, res) => {
+  try {
+    let Users = await User.find();
+    if (Users) {
+      return res.status(200).send(Users);
+    }
+    return res.send("No Users");
+  } catch (err) {
+    res.status(500).send(err);
   }
 });
 
