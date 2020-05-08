@@ -14,6 +14,4 @@ app.use("/api/profiles", require("./routes/api/profile"));
 app.use("/api/posts", require("./routes/api/posts"));
 app.use("/api/auth", require("./routes/api/auth"));
 
-app.get("/", (req, res) => {
-  res.send("Hello Developer");
-});
+//module.exports = app;

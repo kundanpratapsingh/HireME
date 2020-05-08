@@ -5,10 +5,10 @@ const gravatar = require("gravatar");
 const auth = require("../../middleware/auth");
 const User = require("../../models/userModel");
 const config = require("config");
-const router = express.Router();
+const userRoute = express.Router();
 
 //Get api/users
-router.post("/", async (req, res) => {
+userRoute.post("/", async (req, res) => {
   const dataToValidate = {
     name: Joi.string().min(3).required(),
     email: Joi.string()
@@ -24,7 +24,7 @@ router.post("/", async (req, res) => {
 
   const { name, email, password } = req.body;
   try {
-    let user = await User.findOne({ name });
+    let user = await User.findOne({ email });
     if (user) {
       return res.status(400).send("User Already Exists");
     }
@@ -55,16 +55,16 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/", auth, async (req, res) => {
+userRoute.get("/", async (req, res) => {
   try {
     let Users = await User.find();
-    if (Users) {
+    if (Users.length > 0) {
       return res.status(200).send(Users);
     }
-    return res.send("No Users");
+    return res.send({ message: "No Users" });
   } catch (err) {
     res.status(500).send(err);
   }
 });
 
-module.exports = router;
+module.exports = userRoute;

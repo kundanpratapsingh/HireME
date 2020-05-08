@@ -1,5 +1,5 @@
 const express = require("express");
-const router = express.Router();
+const authRoute = express.Router();
 const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 const config = require("config");
@@ -8,7 +8,7 @@ const User = require("../../models/userModel");
 const auth = require("../../middleware/auth");
 
 //Get api/auth
-router.post("/", async (req, res) => {
+authRoute.post("/", async (req, res) => {
   const dataToValidate = {
     email: Joi.string()
       .email({ tlds: { allow: false } })
@@ -51,7 +51,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/", auth, async (req, res) => {
+authRoute.get("/", async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
     if (user) {
@@ -64,4 +64,4 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
-module.exports = router;
+module.exports = authRoute;
